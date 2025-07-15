@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="bg-gray" style="height: 100vh; width: 100vw">
+      <div class="flex h-100">
+        <div class="flex">
+          <div class="create-new-task-container" id="create-container">
+            <div class="flex justify-space-between">
+              <div></div>
+              <div class="font-16">Create new Task</div>
+              <div
+                class="user-none-pointer"
+                id="create-cancel"
+                onclick="onCloseCreate()"
+              >
+                x
+              </div>
+            </div>
+            <div>
+              <form
+                id="task-form"
+                action="submit"
+                class="font-11 text-start p-2 flex flex-column"
+              >
+                <div class="flex flex-column w-100 mt-2">
+                  <label for="title">Title:</label>
+                  <input type="text" name="title" id="task-title" maxlength="25"/>
+                </div>
+                <div class="flex flex-column pt-1 w-100 mt-2">
+                  <label for="descritpion">Description:</label>
+                  <textarea
+                    name="descritpion"
+                    rows="4"
+                    maxlength="100"
+                    id="descritpion"
+                  ></textarea>
+                </div>
+                <div class="flex mt-2 flex-column">
+                  <div class="py-1">Type</div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="personal" />
+                    <label class="px-1" for="personal">Personal</label>
+                  </div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="work" />
+                    <label class="px-1" for="work">Work</label>
+                  </div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="other" />
+                    <label class="px-1" for="other">Other</label>
+                  </div>
+                  <div class="py-1">Completed</div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="completed" />
+                    <label class="px-1" for="completed">Completed</label>
+                  </div>
+                  <div class="py-1">Priotarization</div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="high" />
+                    <label class="px-1" for="high">High</label>
+                  </div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="medium" />
+                    <label class="px-1" for="medium">Medium</label>
+                  </div>
+                  <div class="flex align-center py-1">
+                    <input type="checkbox" name="low" />
+                    <label class="px-1" for="low">Low</label>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex mt-2 align-center overflow-hidden">
+                    <label for="startDate" style="min-width: 100px"
+                      >Start date:</label
+                    ><input
+                      type="date"
+                      required
+                      class="w-fit"
+                      name="startDate"
+                    />
+                  </div>
+                  <div class="flex mt-2 align-center">
+                    <label for="endDate" style="min-width: 100px"
+                      >End date:</label
+                    ><input
+                      type="date"
+                      class="w-fit"
+                      name="endDate"
+                    />
+                  </div>
+                </div>
+                <div class="w-100 flex justify-end">
+                  <button type="submit" class="btn user-none-pointer">
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-column w-100 overflow-hidden overflow-y-auto">
+          <div class="header">
+            <div>Student To-do app</div>
+            <div class="question-circle">?</div>
+          </div>
+          <div class="p-1">
+            <div class="create-link" id="create-task" onclick="onOpenCreate()">
+              + create new task
+            </div>
+            <input
+              type="text"
+              name="search"
+              id="search-input"
+              class="input-style"
+              placeholder="Search..."
+            />
+            <div class="py-2 flex wrap gap-10"></div>
+            <div id="task-list" class="flex wrap gap-20 user-none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
