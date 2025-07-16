@@ -41,6 +41,11 @@ function getCardHeaderClass(task) {
   if (task.medium) return "card-header-medium";
   return "card-header-low";
 }
+function getTaskType(task) {
+  if (task.work) return "Work";
+  if (task.personal) return "Personal";
+  return "Other";
+}
 
 function handleUncheckedCheckboxes(checkboxes) {
   const oneChecked = Array.from(checkboxes).some((cb) => cb.checked);
@@ -137,7 +142,7 @@ function editTask() {
     });
   });
 }
-function handleDrag(){
+function handleDrag() {
   let draggedIndex = null;
 
   document.querySelectorAll(".card-container").forEach((card) => {
@@ -151,7 +156,7 @@ function handleDrag(){
 
     card.addEventListener("dragover", (e) => {
       e.preventDefault();
-      card.classList.add("drag-hover"); 
+      card.classList.add("drag-hover");
     });
 
     card.addEventListener("dragleave", () => {
@@ -163,7 +168,7 @@ function handleDrag(){
       card.classList.remove("drag-hover");
 
       const dropIndex = index;
-      if (draggedIndex === dropIndex) return; 
+      if (draggedIndex === dropIndex) return;
 
       const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
       const [draggedTask] = tasks.splice(draggedIndex, 1);
@@ -198,18 +203,22 @@ function onRenderTasks(taskArray = null) {
           <span class="card-circle pointer ${circleClass}" data-index="${index}"></span>
           <span class="px-1 bold">${task.title || "Untitled"}</span>
         </div>
-        <div class="card-category py-05"> 
+        <div class="card-category py-05">
           <div class="menu-item edit-task" data-index="${index}"><span class="p-05">✎</span></div>
           <div class="menu-item delete-task" data-index="${index}"><span class="p-05">✖</span></div>
-        </div>       
-        
-        </div>
+        </div>         
+      </div>
       <div class="card-content">
+        <div class="card-category">
+          <div class="menu-item edit-task" data-index="${index}">${getTaskType(
+      task
+    )}</div>
+        <div>
+          ${task.completed === "on" ? "(Completed)" : ""}</div>
+        </div>
         <div>
           <div class="py-05 flex justify-space-between align-center user-text">
             📆${startDate}${task.endDate ? ` - ${endDate}` : ""}
-            <div>
-            ${task.completed === "on" ? "(Completed)" : ""}</div>
           </div>
         </div>
         <div class="text-next-line user-text">${task.descritpion || ""}</div>
@@ -256,6 +265,50 @@ document.getElementById("task-form").addEventListener("submit", function (e) {
   formData.forEach((value, key) => {
     taskData[key] = value;
   });
+
+  let valid = true;
+  let errorMsg = "";
+
+  const titleField = document.getElementById("title").value.trim();
+  const startDateField = document.getElementById("startDate").value;
+  const endDateField = document.getElementById("endDate").value;
+
+  const typeChecked = Array.from(typecheckboxes).some((cb) => cb.checked);
+  const prioChecked = Array.from(priocheckboxes).some((cb) => cb.checked);
+
+  if (!titleField) {
+    valid = false;
+    errorMsg += "Title is required.\n";
+  }
+
+  if (!typeChecked) {
+    valid = false;
+    errorMsg += "Type of task is required.\n";
+  }
+
+  if (!prioChecked) {
+    valid = false;
+    errorMsg += "Priority of task is required.\n";
+  }
+  if (!startDateField) {
+    valid = false;
+    errorMsg += "Starting date of task is required.\n";
+  }
+  if (!endDateField) {
+    valid = false;
+    errorMsg += "Ending date of task is required.\n";
+  }
+
+  if (new Date(endDateField.value) < new Date(startDateField.value)) {
+    valid = false;
+    errorMsg += "End date can't be before the starting date.\n";
+  }
+
+  if (!valid) {
+    e.preventDefault();
+    alert(errorMsg);
+    return;
+  }
 
   const mode = this.getAttribute("data-mode");
   const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
