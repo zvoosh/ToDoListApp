@@ -7,15 +7,15 @@
     <title>Document</title>
   </head>
   <body>
-    <div class="bg-gray" style="height: 100vh; width: 100vw">
-      <div class="flex h-100">
+    <div class="bg-gray" style="height: 100vh; width: 100vw;">
+      <div class="container">
         <div class="flex">
           <div class="create-new-task-container" id="create-container">
-            <div class="flex justify-space-between">
+            <div class="flex justify-space-between pt-1">
               <div></div>
-              <div class="font-16">Create new Task</div>
+              <div class="font-16" id="add-title">Add new Task</div>
               <div
-                class="user-none-pointer"
+                class="user-none-pointer pr-1"
                 id="create-cancel"
                 onclick="onCloseCreate()"
               >
@@ -26,11 +26,12 @@
               <form
                 id="task-form"
                 action="submit"
+                data-mode="create"
                 class="font-11 text-start p-2 flex flex-column"
               >
                 <div class="flex flex-column w-100 mt-2">
                   <label for="title">Title:</label>
-                  <input type="text" name="title" id="task-title" maxlength="25"/>
+                  <input type="text" name="title" id="title" maxlength="25" />
                 </div>
                 <div class="flex flex-column pt-1 w-100 mt-2">
                   <label for="descritpion">Description:</label>
@@ -44,33 +45,33 @@
                 <div class="flex mt-2 flex-column">
                   <div class="py-1">Type</div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="personal" />
+                    <input type="checkbox" name="personal" id="personal" />
                     <label class="px-1" for="personal">Personal</label>
                   </div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="work" />
+                    <input type="checkbox" name="work" id="work" />
                     <label class="px-1" for="work">Work</label>
                   </div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="other" />
+                    <input type="checkbox" name="other" id="other" />
                     <label class="px-1" for="other">Other</label>
                   </div>
                   <div class="py-1">Completed</div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="completed" />
+                    <input type="checkbox" name="completed" id="completed" />
                     <label class="px-1" for="completed">Completed</label>
                   </div>
                   <div class="py-1">Priotarization</div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="high" />
+                    <input type="checkbox" name="high" id="high" />
                     <label class="px-1" for="high">High</label>
                   </div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="medium" />
+                    <input type="checkbox" name="medium" id="medium" />
                     <label class="px-1" for="medium">Medium</label>
                   </div>
                   <div class="flex align-center py-1">
-                    <input type="checkbox" name="low" />
+                    <input type="checkbox" name="low" id="low" />
                     <label class="px-1" for="low">Low</label>
                   </div>
                 </div>
@@ -80,6 +81,7 @@
                       >Start date:</label
                     ><input
                       type="date"
+                      id="startDate"
                       required
                       class="w-fit"
                       name="startDate"
@@ -90,14 +92,22 @@
                       >End date:</label
                     ><input
                       type="date"
+                      id="endDate"
                       class="w-fit"
                       name="endDate"
                     />
                   </div>
                 </div>
-                <div class="w-100 flex justify-end">
+                <div class="w-100 flex justify-end pt-1">
+                  <button
+                    type="button"
+                    class="btn user-none-pointer mr-1"
+                    onclick="onCloseCreate()"
+                  >
+                    Cancel
+                  </button>
                   <button type="submit" class="btn user-none-pointer">
-                    Create
+                    Submit
                   </button>
                 </div>
               </form>
@@ -111,7 +121,7 @@
           </div>
           <div class="p-1">
             <div class="create-link" id="create-task" onclick="onOpenCreate()">
-              + create new task
+              + Add
             </div>
             <input
               type="text"
@@ -120,8 +130,8 @@
               class="input-style"
               placeholder="Search..."
             />
-            <div class="py-2 flex wrap gap-10"></div>
-            <div id="task-list" class="flex wrap gap-20 user-none"></div>
+            <div class="py-2"></div>
+            <div id="task-list" class="task-list"></div>
           </div>
         </div>
       </div>

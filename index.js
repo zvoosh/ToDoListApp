@@ -6,6 +6,7 @@ const typecheckboxes = document.querySelectorAll(
 const priocheckboxes = document.querySelectorAll(
   'input[name="high"], input[name="medium"], input[name="low"]'
 );
+
 typecheckboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
     if (checkbox.checked) {
@@ -36,6 +37,13 @@ priocheckboxes.forEach((checkbox) => {
     }
   });
 });
+function handleExclusiveCheckboxes(checkboxes) {
+  const oneChecked = Array.from(checkboxes).some((cb) => cb.checked);
+
+  checkboxes.forEach((cb) => {
+    cb.disabled = oneChecked && !cb.checked;
+  });
+}
 function formatDate(date) {
   const newDate = new Date(date);
   const y = newDate.getFullYear();
@@ -52,12 +60,34 @@ function getCardHeaderClass(task) {
   if (task.medium) return "card-header-medium";
   return "card-header-low";
 }
-function toggleMenu() {
-  const menu = document.querySelector(".menu");
-  menu.classList.toggle("hidden");
+function toggleMenu(event) {
+  const wrapper = event.currentTarget;
+
+  document.querySelectorAll(".menu").forEach((menu) => {
+    if (menu !== wrapper.querySelector(".menu")) {
+      menu.classList.add("hidden");
+    }
+  });
+
+  const menu = wrapper.querySelector(".menu");
+  if (menu) {
+    menu.classList.toggle("hidden");
+  }
 }
-function onRenderTasks() {
+document.getElementById("search-input").addEventListener("input", function () {
+  const query = this.value.toLowerCase();
   const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const filtered = tasks.filter((task) => {
+    return (
+      task.title.toLowerCase().includes(query) ||
+      (task.descritpion && task.descritpion.toLowerCase().includes(query))
+    );
+  });
+
+  onRenderTasks(filtered);
+});
+function onRenderTasks(taskArray = null) {
+  const tasks = taskArray || JSON.parse(localStorage.getItem("tasks")) || [];
   const container = document.getElementById("task-list");
   container.innerHTML = "";
 
@@ -66,15 +96,6 @@ function onRenderTasks() {
     const headerClass = getCardHeaderClass(task);
     const startDate = formatDate(task.startDate);
     const endDate = formatDate(task.endDate);
-    // ${
-    //             task.personal
-    //               ? "Personal"
-    //               : task.work
-    //               ? "Work"
-    //               : task.other
-    //               ? "Other"
-    //               : ""
-    //           }
     const card = document.createElement("div");
     card.className = "card-container";
     card.innerHTML = `
@@ -83,53 +104,96 @@ function onRenderTasks() {
           <span class="card-circle pointer ${circleClass}" data-index="${index}"></span>
           <span class="px-1 bold">${task.title || "Untitled"}</span>
         </div>
-          <div class="card-category py-05">
-            <div class="burger-wrapper" onclick="toggleMenu()">
-              <div class="flex flex-column p-05 ml-05">
-                <div class="burger"></div>
-                <div class="burger"></div>
-                <div class="burger"></div>
-              </div>
-              <div class="menu hidden">
-                <div>Edit</div>
-                <div>Delete</div>
-                <div>Type</div>
-              </div>
-            </div>
+        <div class="card-category py-05"> 
+          <div class="menu-item edit-task" data-index="${index}"><span class="pr-05">✎</span></div>
+          <div class="menu-item delete-task" data-index="${index}"><span class="pr-05">✖</span></div>
+        </div>       
+        
+        </div>
+      <div class="card-content">
+        <div>
+          <div class="py-05 flex justify-space-between align-center user-text">
+            📆${startDate}${task.endDate ? ` - ${endDate}` : ""}
+            <div>
+            ${task.completed === "on" ? "(Completed)" : ""}</div>
           </div>
         </div>
-        <div class="card-content">
-          <div>
-            <div class="py-05 flex justify-space-between align-center user-text">
-              ${startDate}${task.endDate ? ` - ${endDate}` : ""}
-              <div>
-              ${task.completed === "on" ? "(Completed)" : ""}</div>
-            </div>
-          </div>
-          <div class="text-next-line user-text">${task.descritpion || ""}</div>
-        </div>
+        <div class="text-next-line user-text">${task.descritpion || ""}</div>
+      </div>
     `;
     container.appendChild(card);
   });
 
-  // ✅ Attach click listeners only once
+  attachCardListeners(tasks);
+
+  document.querySelectorAll(".edit-task").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const index = e.currentTarget.getAttribute("data-index");
+      document.getElementById("add-title").textContent = "Edit task";
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      const container = document.getElementById("create-container");
+      container.classList.add("open-create");
+
+      document.getElementById("title").value = tasks[index].title || "";
+      document.getElementById("descritpion").value =
+        tasks[index].descritpion || "";
+      document.getElementById("personal").checked =
+        tasks[index].personal === "on";
+      document.getElementById("work").checked = tasks[index].work === "on";
+      document.getElementById("other").checked = tasks[index].other === "on";
+      document.getElementById("completed").checked =
+        tasks[index].completed === "on";
+      document.getElementById("high").checked = tasks[index].high === "on";
+      document.getElementById("medium").checked = tasks[index].medium === "on";
+      document.getElementById("low").checked = tasks[index].low === "on";
+      document.getElementById("startDate").value = tasks[index].startDate || "";
+      document.getElementById("endDate").value = tasks[index].endDate || "";
+      document.getElementById("task-form").setAttribute("data-mode", "edit");
+      document.getElementById("task-form").setAttribute("data-index", index);
+
+      handleExclusiveCheckboxes(typecheckboxes);
+      handleExclusiveCheckboxes(priocheckboxes);
+    });
+  });
+
+  if (tasks.length === 0) {
+    const message = document.createElement("div");
+    message.className = "no-tasks-message";
+    message.textContent = "You have no tasks prepared.";
+    container.appendChild(message);
+    return;
+  }
+}
+
+function attachCardListeners(tasks) {
   document.querySelectorAll(".card-circle").forEach((circle) => {
     circle.addEventListener("click", () => {
       const index = circle.getAttribute("data-index");
-      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-      const task = tasks[index];
-
-      // Toggle completion
-      task.completed = task.completed === "on" ? "off" : "on";
+      tasks[index].completed = tasks[index].completed === "on" ? "off" : "on";
       localStorage.setItem("tasks", JSON.stringify(tasks));
+      onRenderTasks();
+    });
+  });
 
-      // Re-render
+  document.querySelectorAll(".delete-task").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const index = e.currentTarget.getAttribute("data-index");
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
       onRenderTasks();
     });
   });
 }
-
 function onOpenCreate() {
+  document.getElementById("add-title").textContent = "Add new task";
+  document.getElementById("task-form").reset();
+  typecheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
+  priocheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
   const container = document.getElementById("create-container");
   container.classList.add("open-create");
 }
@@ -145,11 +209,31 @@ document.getElementById("task-form").addEventListener("submit", function (e) {
     taskData[key] = value;
   });
 
-  const storage = JSON.parse(localStorage.getItem("tasks")) || [];
-  storage.push(taskData);
-  localStorage.setItem("tasks", JSON.stringify(storage));
+  const mode = this.getAttribute("data-mode");
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+  if (mode === "edit") {
+    const index = this.getAttribute("data-index");
+    tasks[index] = taskData;
+    this.setAttribute("data-mode", "create");
+    this.removeAttribute("data-index");
+  } else {
+    tasks.push(taskData);
+  }
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
   onRenderTasks();
+  const container = document.getElementById("create-container");
+  container.classList.remove("open-create");
   this.reset();
+
+  typecheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
+  priocheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
 });
-window.onload = onRenderTasks;
+document.addEventListener("DOMContentLoaded", () => {
+  onRenderTasks();
+});
