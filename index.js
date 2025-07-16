@@ -8,21 +8,6 @@ const typecheckboxes = document.querySelectorAll(
 const priocheckboxes = document.querySelectorAll(
   'input[name="high"], input[name="medium"], input[name="low"]'
 );
-//search enable
-document
-  .getElementById("search-input")
-  .addEventListener("input", function (event) {
-    const query = event.value.toLowerCase();
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const filtered = tasks.filter((task) => {
-      return (
-        task.title.toLowerCase().includes(query) ||
-        (task.descritpion && task.descritpion.toLowerCase().includes(query))
-      );
-    });
-
-    onRenderTasks(filtered);
-  });
 
 function formatDate(date) {
   const newDate = new Date(date);
@@ -182,7 +167,21 @@ function handleDrag() {
     });
   });
 }
+//search enable
+document
+  .getElementById("search-input")
+  .addEventListener("input", function (event) {
+    const query = event.target.value.toLowerCase();
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    const filtered = tasks.filter((task) => {
+      return (
+        task.title.toLowerCase().includes(query) ||
+        (task.descritpion && task.descritpion.toLowerCase().includes(query))
+      );
+    });
 
+    onRenderTasks(filtered);
+  });
 function onRenderTasks(taskArray = null) {
   const tasks = taskArray || JSON.parse(localStorage.getItem("tasks")) || [];
   const container = document.getElementById("task-list");
