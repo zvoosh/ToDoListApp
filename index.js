@@ -24,7 +24,7 @@ function getCircleClass(task) {
 function getCardHeaderClass(task) {
   if (task.high) return "card-header-high";
   if (task.medium) return "card-header-medium";
-  return "card-header-low";
+  return "card-header-low"; 
 }
 function getTaskType(task) {
   if (task.work) return "Work";
