@@ -201,10 +201,6 @@ textarea {
   border-radius: 10px;
   align-self: start;
   height: auto;
-  cursor: grab;
-}
-.card-container.drag-hover {
-  border: 2px dashed #007bff;
 }
 .card-header {
   display: flex;

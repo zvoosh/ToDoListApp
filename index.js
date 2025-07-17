@@ -24,14 +24,31 @@ function getCircleClass(task) {
 function getCardHeaderClass(task) {
   if (task.high) return "card-header-high";
   if (task.medium) return "card-header-medium";
-  return "card-header-low"; 
+  return "card-header-low";
 }
 function getTaskType(task) {
   if (task.work) return "Work";
   if (task.personal) return "Personal";
   return "Other";
 }
+//create modal
+function onOpenCreate() {
+  document.getElementById("add-title").textContent = "Add new task";
+  document.getElementById("task-form").reset();
+  typecheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
+  priocheckboxes.forEach((checkbox) => {
+    checkbox.disabled = false;
+  });
+  const container = document.getElementById("create-container");
+  container.classList.add("open-create");
+}
 
+function onCloseCreate() {
+  const container = document.getElementById("create-container");
+  container.classList.remove("open-create");
+}
 function handleUncheckedCheckboxes(checkboxes) {
   const oneChecked = Array.from(checkboxes).some((cb) => cb.checked);
 
@@ -72,29 +89,7 @@ priocheckboxes.forEach((checkbox) => {
     }
   });
 });
-
-function listeners(tasks) {
-  //toggle card-circle change
-  document.querySelectorAll(".card-circle").forEach((circle) => {
-    circle.addEventListener("click", () => {
-      const index = circle.getAttribute("data-index");
-      tasks[index].completed = tasks[index].completed === "on" ? "off" : "on";
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-      onRenderTasks();
-    });
-  });
-
-  // delete task
-  document.querySelectorAll(".delete-task").forEach((button) => {
-    button.addEventListener("click", (e) => {
-      const index = e.currentTarget.getAttribute("data-index");
-      tasks.splice(index, 1);
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-      onRenderTasks();
-    });
-  });
-}
-
+//edit preload tasks
 function editTask() {
   document.querySelectorAll(".edit-task").forEach((button) => {
     button.addEventListener("click", (e) => {
@@ -127,46 +122,6 @@ function editTask() {
     });
   });
 }
-function handleDrag() {
-  let draggedIndex = null;
-
-  document.querySelectorAll(".card-container").forEach((card) => {
-    card.setAttribute("draggable", "true");
-    const index = parseInt(card.dataset.index);
-
-    card.addEventListener("dragstart", (e) => {
-      draggedIndex = index;
-      e.dataTransfer.setData("text/plain", index);
-    });
-
-    card.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      card.classList.add("drag-hover");
-    });
-
-    card.addEventListener("dragleave", () => {
-      card.classList.remove("drag-hover");
-    });
-
-    card.addEventListener("drop", (e) => {
-      e.preventDefault();
-      card.classList.remove("drag-hover");
-
-      const dropIndex = index;
-      if (draggedIndex === dropIndex) return;
-
-      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-      const [draggedTask] = tasks.splice(draggedIndex, 1);
-      tasks.splice(dropIndex, 0, draggedTask);
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-      onRenderTasks();
-    });
-
-    card.addEventListener("dragend", () => {
-      card.classList.remove("dragging");
-    });
-  });
-}
 //search enable
 document
   .getElementById("search-input")
@@ -194,7 +149,6 @@ function onRenderTasks(taskArray = null) {
     const endDate = formatDate(task.endDate);
     const card = document.createElement("div");
     card.className = "card-container";
-    card.setAttribute("draggable", "true");
     card.dataset.index = index;
     card.innerHTML = `
       <div class="card-header user-text ${headerClass}">
@@ -209,7 +163,7 @@ function onRenderTasks(taskArray = null) {
       </div>
       <div class="card-content">
         <div class="card-category">
-          <div class="menu-item edit-task" data-index="${index}">${getTaskType(
+          <div class="" data-index="${index}">${getTaskType(
       task
     )}</div>
         <div>
@@ -226,10 +180,26 @@ function onRenderTasks(taskArray = null) {
     container.appendChild(card);
   });
 
-  listeners(tasks);
-  editTask();
-  handleDrag();
+  //toggle card-circle change
+  document.querySelectorAll(".card-circle").forEach((circle) => {
+    circle.addEventListener("click", () => {
+      const index = circle.getAttribute("data-index");
+      tasks[index].completed = tasks[index].completed === "on" ? "off" : "on";
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      onRenderTasks();
+    });
+  });
 
+  // delete task
+  document.querySelectorAll(".delete-task").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const index = e.currentTarget.getAttribute("data-index");
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      onRenderTasks();
+    });
+  });
+  editTask();
   if (tasks.length === 0) {
     const message = document.createElement("div");
     message.className = "no-tasks-message";
@@ -239,23 +209,6 @@ function onRenderTasks(taskArray = null) {
   }
 }
 
-function onOpenCreate() {
-  document.getElementById("add-title").textContent = "Add new task";
-  document.getElementById("task-form").reset();
-  typecheckboxes.forEach((checkbox) => {
-    checkbox.disabled = false;
-  });
-  priocheckboxes.forEach((checkbox) => {
-    checkbox.disabled = false;
-  });
-  const container = document.getElementById("create-container");
-  container.classList.add("open-create");
-}
-
-function onCloseCreate() {
-  const container = document.getElementById("create-container");
-  container.classList.remove("open-create");
-}
 //Submit form
 document.getElementById("task-form").addEventListener("submit", function (e) {
   e.preventDefault();
