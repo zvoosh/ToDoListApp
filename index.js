@@ -298,7 +298,7 @@ document.getElementById("task-form").addEventListener("submit", function (e) {
     errorMsg += "Ending date of task is required.\n";
   }
 
-  if (new Date(endDateField.value) < new Date(startDateField.value)) {
+  if (new Date(endDateField) < new Date(startDateField)) {
     valid = false;
     errorMsg += "End date can't be before the starting date.\n";
   }
