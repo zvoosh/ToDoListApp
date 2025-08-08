@@ -1,6 +1,6 @@
 # ToDoListApp
 
-A simple and elegant To-Do List web application built using HTML, CSS, and JavaScript. This app helps users manage daily tasks efficiently with a clean interface and intuitive controls.
+A simple and good looking To-Do List web application built using HTML, CSS, and JavaScript. This app helps users manage daily tasks efficiently with a clean interface and intuitive controls.
 
 # Features
 
